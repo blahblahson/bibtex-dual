@@ -1,0 +1,43 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{bibtex-dual}[2015/07/15 v0.1 add an extra label to a bibtex entry]
+\usepackage{stackengine}
+\makeatletter
+\def\bibitemd{\@lbibitemd}
+\def\@biblabeld#1#2{\raisebox{0pt}[0pt][0pt]{\Longunderstack[l]{{[#1]} {[#2]}}}}
+  \providecommand*{\@BIBLABELD}{\@biblabeld}%
+  \def\bibcited#1#2{%
+    \@newl@bel{b}{#1\@extra@binfo}{%
+      \hyper@@link[cite]{}{cite.#1\@extra@b@citeb}{#2}%
+    }%
+  }%
+  \def\@lbibitemd[#1][#2]#3#4{%
+    \@skiphyperreftrue
+    \H@item[%
+      \ifx\Hy@raisedlink\@empty
+        \hyper@anchorstart{cite.#3\@extra@b@citeb}%
+        \@BIBLABELD{#1}{#2}%
+        \hyper@anchorend%
+        \hyper@anchorstart{cite.#4\@extra@b@citeb}\hyper@anchorend
+      \else
+        \Hy@raisedlink{%
+          \hyper@anchorstart{cite.#3\@extra@b@citeb}\hyper@anchorend%
+          \hyper@anchorstart{cite.#4\@extra@b@citeb}\hyper@anchorend
+        }%
+        \@BIBLABELD{#1}{#2}%
+      \fi
+      \hfill
+    ]%
+    \@skiphyperreffalse
+    \if@filesw
+      \begingroup
+        \let\protect\noexpand
+        \immediate\write\@auxout{%
+            \string\bibcited{#3}{#1}%
+            \string\bibcited{#4}{#2}%
+        }%
+      \endgroup
+    \fi
+    \ignorespaces
+  }%
+
+\makeatother
